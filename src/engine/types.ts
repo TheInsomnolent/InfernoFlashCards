@@ -12,26 +12,29 @@ export interface Point {
   y: number
 }
 
-export const enum MonsterType {
-  Bat = 'bat', // Jal-MejRah
-  Blob = 'blob', // Jal-Ak
-  Meleer = 'meleer', // Jal-ImKot
-  Ranger = 'ranger', // Jal-Xil
-  Mager = 'mager', // Jal-Zek
-}
+export const MonsterType = {
+  Bat: 'bat', // Jal-MejRah
+  Blob: 'blob', // Jal-Ak
+  Meleer: 'meleer', // Jal-ImKot
+  Ranger: 'ranger', // Jal-Xil
+  Mager: 'mager', // Jal-Zek
+} as const
+export type MonsterType = (typeof MonsterType)[keyof typeof MonsterType]
 
-export const enum AttackStyle {
-  Melee = 'melee',
-  Ranged = 'ranged',
-  Magic = 'magic',
-}
+export const AttackStyle = {
+  Melee: 'melee',
+  Ranged: 'ranged',
+  Magic: 'magic',
+} as const
+export type AttackStyle = (typeof AttackStyle)[keyof typeof AttackStyle]
 
-export const enum Prayer {
-  None = 'none',
-  ProtectMelee = 'protect-melee',
-  ProtectRanged = 'protect-ranged',
-  ProtectMagic = 'protect-magic',
-}
+export const Prayer = {
+  None: 'none',
+  ProtectMelee: 'protect-melee',
+  ProtectRanged: 'protect-ranged',
+  ProtectMagic: 'protect-magic',
+} as const
+export type Prayer = (typeof Prayer)[keyof typeof Prayer]
 
 /** Static combat definition for a monster type. */
 export interface MonsterDefinition {

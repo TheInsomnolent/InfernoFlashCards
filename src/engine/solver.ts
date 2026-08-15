@@ -150,7 +150,7 @@ export function analyseStepOut(
   const styles = new Set(threats.map((t) => t.style))
   const prayable = styles.size <= 1
 
-  let prayer = Prayer.None
+  let prayer: Prayer = Prayer.None
   if (threats.length > 0) {
     const mostDangerous = threats.reduce((a, b) =>
       MONSTERS[b.monster.type].maxHit > MONSTERS[a.monster.type].maxHit ? b : a,
