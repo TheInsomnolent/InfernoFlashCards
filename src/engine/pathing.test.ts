@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { npcStep, footprintBlocked, npcDestination } from './pathing'
+import { npcStep, footprintBlocked, footprintCovers } from './pathing'
 import type { FootprintBlockedFn } from './pathing'
 
 const open: FootprintBlockedFn = () => false
@@ -11,7 +11,7 @@ function pillarBlock(bx: number, by: number): FootprintBlockedFn {
 }
 
 describe('npcStep', () => {
-  it('steps diagonally towards the target when unobstructed', () => {
+  it('steps diagonally towards the player when unobstructed', () => {
     expect(npcStep({ x: 0, y: 0 }, 1, { x: 5, y: 5 }, open)).toEqual({ x: 1, y: 1 })
     expect(npcStep({ x: 5, y: 5 }, 1, { x: 0, y: 0 }, open)).toEqual({ x: 4, y: 4 })
   })
@@ -21,7 +21,7 @@ describe('npcStep', () => {
     expect(npcStep({ x: 0, y: 5 }, 1, { x: 0, y: 0 }, open)).toEqual({ x: 0, y: 4 })
   })
 
-  it('does not move when already at the target', () => {
+  it('does not move when already on the player tile', () => {
     expect(npcStep({ x: 3, y: 3 }, 1, { x: 3, y: 3 }, open)).toEqual({ x: 3, y: 3 })
   })
 
@@ -51,6 +51,15 @@ describe('npcStep', () => {
     // A 1x1 NPC on the same path can still advance.
     expect(npcStep({ x: 1, y: 1 }, 1, { x: 8, y: 1 }, blocked)).toEqual({ x: 2, y: 1 })
   })
+
+  it('cancels the vertical component of a diagonal step onto the player', () => {
+    // Corner-safespot rule: NPC at (2,2) stepping NE onto player at (3,3)
+    // becomes a pure east step instead.
+    expect(npcStep({ x: 2, y: 2 }, 1, { x: 3, y: 3 }, open)).toEqual({ x: 3, y: 2 })
+    // Large NPC: 3x3 at (0,0) heading NE towards player at (3,3); the
+    // diagonal step to (1,1) would cover (3,3), so it steps east only.
+    expect(npcStep({ x: 0, y: 0 }, 3, { x: 3, y: 3 }, open)).toEqual({ x: 1, y: 0 })
+  })
 })
 
 describe('footprintBlocked', () => {
@@ -61,10 +70,10 @@ describe('footprintBlocked', () => {
   })
 })
 
-describe('npcDestination', () => {
-  it('centres the footprint on the player', () => {
-    expect(npcDestination({ x: 10, y: 10 }, 1)).toEqual({ x: 10, y: 10 })
-    expect(npcDestination({ x: 10, y: 10 }, 3)).toEqual({ x: 9, y: 9 })
-    expect(npcDestination({ x: 10, y: 10 }, 4)).toEqual({ x: 8, y: 8 })
+describe('footprintCovers', () => {
+  it('detects tiles inside and outside the footprint', () => {
+    expect(footprintCovers({ x: 5, y: 5 }, 3, { x: 7, y: 7 })).toBe(true)
+    expect(footprintCovers({ x: 5, y: 5 }, 3, { x: 8, y: 7 })).toBe(false)
+    expect(footprintCovers({ x: 5, y: 5 }, 1, { x: 5, y: 5 })).toBe(true)
   })
 })

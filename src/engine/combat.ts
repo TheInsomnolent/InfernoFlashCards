@@ -61,7 +61,9 @@ export function canMeleeAttack(sw: Point, size: number, player: Point): boolean 
 
 /**
  * Whether a ranged/magic NPC can attack the player: within attack range of
- * the footprint edge, not underneath it, and with line of sight.
+ * the footprint edge, not underneath it, and with line of sight. As in the
+ * game engine, the sight line for an NPC is traced from the player's tile to
+ * the footprint tile of the NPC closest to the player.
  */
 export function canRangedAttack(
   sw: Point,
@@ -72,7 +74,7 @@ export function canRangedAttack(
 ): boolean {
   if (isUnderNpc(sw, size, player)) return false
   if (distanceFromFootprint(sw, size, player) > range) return false
-  return hasLineOfSight(nearestFootprintTile(sw, size, player), player, blocked)
+  return hasLineOfSight(player, nearestFootprintTile(sw, size, player), blocked)
 }
 
 /** Generic attack check for any style. */
